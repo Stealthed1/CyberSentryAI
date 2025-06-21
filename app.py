@@ -1,88 +1,50 @@
-import streamlit as st
-import re
-from urllib.parse import urlparse
+# Generating the full updated source code for CyberSentry AI in a zip file
 
-# ---------------------
-# STREAMLIT CONFIGURATION
-# ---------------------
+import os
+import zipfile
+
+# Define base path for file creation
+base_path = "/mnt/data/cybersentryai"
+os.makedirs(base_path, exist_ok=True)
+
+# Dictionary of files and their content
+files = {
+    "app.py": '''import streamlit as st
+from url_analyzer import is_suspicious_url
+
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
 st.title("CyberSentryAI 🛡️")
 st.subheader("AI-powered Scam & Phishing Detection for Users")
-st.write("Paste a suspicious message or link below and click **Analyze**.")
 
-# ---------------------
-# SCAM TEXT DETECTOR
-# ---------------------
-def is_scam(msg):
-    msg = msg.lower()
-    red_flags = [
-        r"congratulations.*(won|selected|shortlisted)",
-        r"you have been (selected|shortlisted|chosen)",
-        r"you.*won.*(lottery|gift|promotion)",
-        r"click.*(link|here).*claim",
-        r"urgent.*(action|required|response)",
-        r"final warning",
-        r"act immediately",
-        r"your.*(account|profile).*suspended",
-        r"payment.*(required|needed|overdue)",
-        r"send.*(bvn|account number|password|otp|card|details)",
-        r"claim.*your.*(reward|prize|benefit)",
-        r"reset.*password",
-        r"you.*inherit.*(fund|money|estate)",
-        r"this is from (cbn|efcc|nimc|waec|ncc|nirsal|nddc|frsc)",
-        r"nysc.*(selection|payment|batch)",
-        r"waec.*result.*(withheld|blocked)",
-        r"your.*nin.*(not linked|blocked)",
-        r"subsidy.*grant",
-        r"smedan.*loan.*disbursement",
-        r"survival fund.*approved",
-        r"bank.*account.*blocked",
-        r"atm.*(blocked|deactivated)",
-        r"you've been credited",
-        r"register.*to receive",
-        r"contact.*our.*agent",
-        r"fill.*this.*form.*urgently",
-        r"work from home.*earn",
-        r"job offer.*urgent",
-        r"interview.*confirmation",
-        r"submit.*cv.*with.*fee",
-        r"pay.*to.*schedule.*interview",
-        r"business.*opportunity.*investment",
-        r"i had a dream.*reveal",
-        r"prophet.*message for you",
-        r"miracle.*awaits.*you",
-        r"donate.*for.*blessing",
-        r"church.*account.*transfer",
-        r"your parcel.*custom.*clearance",
-        r"delivery.*fee.*payment",
-        r"package.*awaiting.*pickup",
-        r"double your bitcoin",
-        r"roi.*within.*24 hours",
-        r"investment.*plan.*high return",
-        r"crypto.*airdrop.*register",
-        r"register.*and.*earn",
-        r"we will report you",
-        r"legal.*action.*will be taken",
-        r"your file has been forwarded",
-        r"investigation.*launched",
-        r"debt.*settlement.*now"
-    ]
-    for pattern in red_flags:
-        if re.search(pattern, msg):
-            return True
-    return False
+st.write("Paste a suspicious message or link below and click Analyze.")
 
-# ---------------------
-# SUSPICIOUS LINK DETECTOR
-# ---------------------
-suspicious_tlds = ['.xyz', '.tk', '.ru', '.cn', '.top', '.buzz']
-suspicious_keywords = [
-    'login', 'verify', 'account', 'bank', 'secure', 'update',
-    'waec', 'nysc', 'ncc', 'nimc', 'cbn', 'atm', 'bvn',
-    'giveaway', 'winner', 'grant', 'payment', 'unlock',
-    'tinyurl', 'bit.ly', 'shorturl', 'is.gd'
-]
+message = st.text_area("Enter message to analyze")
+url = st.text_input("Or enter a link to analyze")
+
+if st.button("🔍 Analyze"):
+    if message.strip():
+        scam_words = ["congratulations", "selected", "winner", "urgent", "bank", "account", "bvn", "lottery", "reward", "free", "limited"]
+        flagged = [word for word in scam_words if word in message.lower()]
+        if flagged:
+            st.error(f"⚠️ This message looks suspicious. Words flagged: {', '.join(flagged)}")
+        else:
+            st.success("✅ Message appears safe.")
+    elif url.strip():
+        is_bad, reason = is_suspicious_url(url)
+        if is_bad:
+            st.error(f"⚠️ Suspicious link detected: {reason}")
+        else:
+            st.success("✅ Link looks safe.")
+    else:
+        st.warning("⚠️ Please enter a message or link before analyzing.")
+''',
+
+    "url_analyzer.py": '''from urllib.parse import urlparse
+
+suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info']
+suspicious_keywords = ['verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria', 'waec', 'nysc', 'nimc', 'bvn', 'cbn', 'free', 'selected', 'shortlisted', 'reward', 'lottery', 'win', 'sttps', 'bit.ly', 'tinyurl']
+whitelisted_domains = ['waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 'jamb.gov.ng', 'nira.org.ng', 'nipost.gov.ng', 'education.gov.ng']
 
 def is_suspicious_url(url):
     try:
@@ -90,6 +52,11 @@ def is_suspicious_url(url):
         domain = parsed.netloc.lower()
         scheme = parsed.scheme
         path = parsed.path.lower()
+
+        # Whitelist check
+        for safe_domain in whitelisted_domains:
+            if domain.endswith(safe_domain):
+                return False, "Domain is trusted (whitelisted)"
 
         if scheme != "https":
             return True, "URL does not use HTTPS (insecure)"
@@ -104,37 +71,22 @@ def is_suspicious_url(url):
         return False, "Link looks clean."
     except Exception as e:
         return True, f"Error analyzing link: {str(e)}"
+''',
 
-# ---------------------
-# ANALYSIS UI
-# ---------------------
-col1, col2 = st.columns(2)
+    "requirements.txt": '''streamlit
+'''
+}
 
-# Text Message Input & Analysis
-with col1:
-    st.markdown("### ✉️ Analyze Text Message")
-    message = st.text_area("Enter suspicious message:")
+# Create each file in the directory
+for filename, content in files.items():
+    file_path = os.path.join(base_path, filename)
+    with open(file_path, "w") as f:
+        f.write(content)
 
-    if st.button("🔍 Analyze Message"):
-        if not message.strip():
-            st.warning("⚠️ Please enter a message before analyzing.")
-        elif is_scam(message):
-            st.error("🚨 This message appears suspicious. Be cautious!")
-        else:
-            st.success("✅ This message appears safe.")
+# Zip the entire directory
+zip_path = "/mnt/data/CyberSentryAI_Updated.zip"
+with zipfile.ZipFile(zip_path, "w") as zipf:
+    for filename in files:
+        zipf.write(os.path.join(base_path, filename), arcname=f"cybersentryai/{filename}")
 
-# URL Input & Analysis
-with col2:
-    st.markdown("### 🔗 Analyze Link or URL")
-    url = st.text_input("Paste a suspicious link:")
-
-    if st.button("🔍 Analyze Link"):
-        if not url.strip():
-            st.warning("⚠️ Please enter a link before analyzing.")
-        else:
-            suspicious, reason = is_suspicious_url(url)
-            if suspicious:
-                st.error(f"🚨 Suspicious link detected: {reason}")
-            else:
-                st.success("✅ Link looks clean.")
-
+zip_path
