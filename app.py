@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
 st.title("CyberSentryAI 🛡️")
-st.subheader("AI-powered Scam & Phishing Detection for Nigerian Users")
+st.subheader("AI-powered Scam & Phishing Detection for Users")
 st.write("Paste a suspicious message or link below and click **Analyze**.")
 
 # ---------------------
