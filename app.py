@@ -2,7 +2,7 @@ import streamlit as st
 from urllib.parse import urlparse
 
 # ---------- CONFIG ----------
-st.set_page_config(page_title="CyberSentry AI", layout="wide")
+st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
 # ---------- WHITELIST & RULES ----------
 suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info']
