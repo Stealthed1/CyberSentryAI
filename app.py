@@ -40,32 +40,29 @@ def is_suspicious_url(url):
         scheme = parsed.scheme
         path = parsed.path.lower()
 
-        # Clean and check domain
+        # Clean domain
         domain = domain.replace("www.", "")
         if domain in whitelisted_domains:
-            return False, "✅ Domain is trusted (whitelisted)"
+            return False, "✅ Link looks safe."
 
-        # HTTPS check
         if scheme != "https":
-            return True, "❌ URL does not use HTTPS (insecure)"
+            return True, "❌ URL is not secure (uses HTTP instead of HTTPS)"
 
-        # TLD check
         for tld in suspicious_tlds:
             if domain.endswith(tld):
-                return True, f"❌ Suspicious domain ending ({tld})"
+                return True, "❌ Suspicious domain ending detected"
 
-        # Subdomain count
         if domain.count('.') > 3:
             return True, "❌ Too many subdomains (may be spoofed)"
 
-        # Suspicious keyword check
         for keyword in suspicious_keywords:
             if keyword in domain or keyword in path:
-                return True, f"❌ Suspicious keyword found in URL: '{keyword}'"
+                return True, "❌ Suspicious pattern found in link"
 
         return False, "✅ Link looks clean."
     except Exception as e:
-        return True, f"⚠️ Error analyzing link: {str(e)}"
+        return True, "⚠️ Error checking the link"
+
 
 # ---------------- STREAMLIT UI ----------------
 st.title("🛡️ CyberSentry AI")
