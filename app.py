@@ -4,20 +4,53 @@ from urllib.parse import urlparse
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
-def add_background():
-    st.markdown(
-        """
+# ✨ Add background and styling
+def add_custom_styles():
+    st.markdown("""
         <style>
+        /* Set background gradient */
         .stApp {
-            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            background: linear-gradient(to right, #f2f7fc, #e0ecf1);
             background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
         }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
 
-add_background()
+        /* Style headers */
+        h1, h2, h3 {
+            color: #002244;
+        }
+
+        /* Style text areas and input boxes */
+        textarea, .stTextInput > div > input {
+            background-color: #ffffff;
+            border: 1px solid #c3d3e5;
+            border-radius: 10px;
+        }
+
+        /* Buttons */
+        button[kind="primary"] {
+            background-color: #0056b3;
+            color: white;
+            border-radius: 8px;
+        }
+
+        /* Metrics & boxes */
+        .stMetric {
+            background-color: #f7fbff;
+            border: 1px solid #d0e2f2;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #f0f6fb;
+        }
+
+        </style>
+    """, unsafe_allow_html=True)
+
+add_custom_styles()
 # ---------------- TRUSTED & SCAM RULES ----------------
 whitelisted_domains = [
     'waecdirect.org',
