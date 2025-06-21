@@ -1,89 +1,106 @@
 import streamlit as st
 from urllib.parse import urlparse
 
-# ---------- PAGE CONFIG ----------
+# ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
-# ---------- SCAM RULES ----------
-suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info']
-suspicious_keywords = [
-    'verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria',
-    'waec', 'nysc', 'nimc', 'bvn', 'cbn', 'free', 'selected', 'shortlisted',
-    'reward', 'lottery', 'win', 'sttps', 'bit.ly', 'tinyurl'
-]
+# ---------------- TRUSTED & SCAM RULES ----------------
 whitelisted_domains = [
-    'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng',
-    'jamb.gov.ng', 'nira.org.ng', 'nipost.gov.ng', 'education.gov.ng'
-]
-scam_words = [
-    "congratulations", "selected", "shortlisted", "winner", "urgent",
-    "bank", "account", "bvn", "lottery", "reward", "free", "click", "update"
+    'waecdirect.org',
+    'nysc.gov.ng',
+    'cbn.gov.ng',
+    'nimc.gov.ng',
+    'jamb.gov.ng',
+    'nipost.gov.ng',
+    'education.gov.ng',
+    'nira.org.ng'
 ]
 
-# ---------- URL CHECK FUNCTION ----------
+suspicious_tlds = [
+    '.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info', '.xyz', '.top'
+]
+
+suspicious_keywords = [
+    'verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria',
+    'nimc', 'bvn', 'cbn', 'selected', 'shortlisted', 'reward', 'lottery',
+    'win', 'bit.ly', 'tinyurl', 'urgent', 'gift', 'claim', 'bonus', 'promo'
+]
+
+scam_words = [
+    "congratulations", "you have been selected", "you have been shortlisted",
+    "dear customer", "urgent action", "verify your account", "claim your reward",
+    "you've won", "update your bank", "click to receive", "limited time offer"
+]
+
+# ---------------- URL ANALYSIS FUNCTION ----------------
 def is_suspicious_url(url):
     try:
         parsed = urlparse(url)
-        domain = parsed.netloc.lower()
+        domain = parsed.netloc.lower().strip()
         scheme = parsed.scheme
         path = parsed.path.lower()
 
-        for safe_domain in whitelisted_domains:
-            if domain.endswith(safe_domain):
-                return False, "Domain is trusted (whitelisted)"
+        # Clean and check domain
+        domain = domain.replace("www.", "")
+        if domain in whitelisted_domains:
+            return False, "✅ Domain is trusted (whitelisted)"
 
+        # HTTPS check
         if scheme != "https":
-            return True, "URL does not use HTTPS (insecure)"
+            return True, "❌ URL does not use HTTPS (insecure)"
 
+        # TLD check
         for tld in suspicious_tlds:
             if domain.endswith(tld):
-                return True, f"Suspicious domain ending ({tld})"
+                return True, f"❌ Suspicious domain ending ({tld})"
 
+        # Subdomain count
         if domain.count('.') > 3:
-            return True, "Too many subdomains (likely spoofed)"
+            return True, "❌ Too many subdomains (may be spoofed)"
 
+        # Suspicious keyword check
         for keyword in suspicious_keywords:
             if keyword in domain or keyword in path:
-                return True, f"Suspicious keyword found: '{keyword}'"
+                return True, f"❌ Suspicious keyword found in URL: '{keyword}'"
 
-        return False, "Link looks clean."
+        return False, "✅ Link looks clean."
     except Exception as e:
-        return True, f"Error analyzing link: {str(e)}"
+        return True, f"⚠️ Error analyzing link: {str(e)}"
 
-# ---------- HEADER ----------
-st.title("CyberSentryAI 🛡️")
-st.subheader("Detect Scam Messages and Suspicious Links Easily")
+# ---------------- STREAMLIT UI ----------------
+st.title("🛡️ CyberSentry AI")
+st.subheader("AI-powered Scam & Phishing Detection for Nigerians")
 
-st.markdown("Analyze text messages and website links independently to check for scams.")
+st.markdown("Analyze suspicious **messages** or **website links** to avoid scams and phishing.")
 
 st.divider()
 
-# ---------- MESSAGE ANALYSIS ----------
+# ---------------- MESSAGE ANALYSIS ----------------
 st.markdown("### 📩 Message Scam Checker")
-message = st.text_area("Enter a suspicious message", key="msg_input")
+message = st.text_area("Paste the suspicious message here", key="msg_input")
 
-if st.button("🕵️ Analyze Message", key="analyze_message"):
+if st.button("🕵️ Analyze Message", key="analyze_msg"):
     if message.strip():
-        flagged = [word for word in scam_words if word in message.lower()]
-        if flagged:
-            st.error(f"⚠️ Suspicious message detected. Keywords: {', '.join(flagged)}")
+        matched = [word for word in scam_words if word in message.lower()]
+        if matched:
+            st.error(f"⚠️ Message is likely **suspicious**.\n\nDetected scam phrases: **{', '.join(matched)}**")
         else:
-            st.success("✅ Message appears safe.")
+            st.success("✅ Message appears safe. No known scam phrases found.")
     else:
         st.warning("⚠️ Please enter a message first.")
 
 st.divider()
 
-# ---------- LINK ANALYSIS ----------
+# ---------------- LINK ANALYSIS ----------------
 st.markdown("### 🔗 Link Phishing Checker")
-url = st.text_input("Enter a suspicious website or link", key="url_input")
+url = st.text_input("Paste the suspicious website or link", key="url_input")
 
-if st.button("🔍 Analyze Link", key="analyze_link"):
+if st.button("🔍 Analyze Link", key="analyze_url"):
     if url.strip():
-        is_bad, reason = is_suspicious_url(url)
-        if is_bad:
-            st.error(f"⚠️ Suspicious link detected: {reason}")
+        risk, reason = is_suspicious_url(url)
+        if risk:
+            st.error(reason)
         else:
-            st.success("✅ Link looks safe.")
+            st.success(reason)
     else:
         st.warning("⚠️ Please enter a link first.")
