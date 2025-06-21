@@ -2,8 +2,8 @@ import streamlit as st
 
 st.set_page_config(page_title="CyberSentry AI", layout="wide")
 
-st.title("🛡️ CyberSentry AI")
-st.subheader("AI-powered Scam & Phishing Detection for Nigerian Users")
+st.title("CyberSentryAI 🛡️")
+st.subheader("AI-powered Scam & Phishing Detection for Users")
 
 st.write("Paste a suspicious message below and click Analyze.")
 
