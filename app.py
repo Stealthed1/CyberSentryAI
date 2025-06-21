@@ -66,7 +66,7 @@ def is_suspicious_url(url):
 
 # ---------------- STREAMLIT UI ----------------
 st.title("🛡️ CyberSentry AI")
-st.subheader("AI-powered Scam & Phishing Detection for Nigerians")
+st.subheader("Your Smartest Line of Defense Against Scams and Phishing Attacks")
 
 st.markdown("Analyze suspicious **messages** or **website links** to avoid scams and phishing.")
 
