@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
-# ---------- WHITELIST & RULES ----------
+# ---------- SCAM RULES ----------
 suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info']
 suspicious_keywords = [
     'verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria',
@@ -54,15 +54,15 @@ def is_suspicious_url(url):
 st.title("CyberSentryAI 🛡️")
 st.subheader("Detect Scam Messages and Suspicious Links Easily")
 
-st.markdown("Enter either a suspicious message or a link below. Each section has its own button for analysis.")
+st.markdown("Analyze text messages and website links independently to check for scams.")
 
 st.divider()
 
 # ---------- MESSAGE ANALYSIS ----------
-st.markdown("### 📩 Message Analysis")
-message = st.text_area("Enter a suspicious message")
+st.markdown("### 📩 Message Scam Checker")
+message = st.text_area("Enter a suspicious message", key="msg_input")
 
-if st.button("🕵️ Analyze Message"):
+if st.button("🕵️ Analyze Message", key="analyze_message"):
     if message.strip():
         flagged = [word for word in scam_words if word in message.lower()]
         if flagged:
@@ -70,15 +70,15 @@ if st.button("🕵️ Analyze Message"):
         else:
             st.success("✅ Message appears safe.")
     else:
-        st.warning("Please enter a message before analyzing.")
+        st.warning("⚠️ Please enter a message first.")
 
 st.divider()
 
 # ---------- LINK ANALYSIS ----------
-st.markdown("### 🔗 Link Analysis")
-url = st.text_input("Enter a suspicious website or link")
+st.markdown("### 🔗 Link Phishing Checker")
+url = st.text_input("Enter a suspicious website or link", key="url_input")
 
-if st.button("🔍 Analyze Link"):
+if st.button("🔍 Analyze Link", key="analyze_link"):
     if url.strip():
         is_bad, reason = is_suspicious_url(url)
         if is_bad:
@@ -86,4 +86,4 @@ if st.button("🔍 Analyze Link"):
         else:
             st.success("✅ Link looks safe.")
     else:
-        st.warning("Please enter a link before analyzing.")
+        st.warning("⚠️ Please enter a link first.")
