@@ -1,7 +1,7 @@
 import streamlit as st
 from urllib.parse import urlparse
 
-# ---------- CONFIG ----------
+# ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
 # ---------- WHITELIST & RULES ----------
@@ -20,7 +20,7 @@ scam_words = [
     "bank", "account", "bvn", "lottery", "reward", "free", "click", "update"
 ]
 
-# ---------- FUNCTION ----------
+# ---------- URL CHECK FUNCTION ----------
 def is_suspicious_url(url):
     try:
         parsed = urlparse(url)
@@ -50,32 +50,40 @@ def is_suspicious_url(url):
     except Exception as e:
         return True, f"Error analyzing link: {str(e)}"
 
-# ---------- UI ----------
+# ---------- HEADER ----------
 st.title("CyberSentryAI 🛡️")
-st.subheader("AI-powered Scam & Phishing Detection for Users")
+st.subheader("Detect Scam Messages and Suspicious Links Easily")
 
-st.markdown("""
-Enter a **suspicious message or a website link** below and click **Analyze** to get results.  
-This tool uses AI logic to help detect scam keywords, link risks, and social engineering traps.
-""")
+st.markdown("Enter either a suspicious message or a link below. Each section has its own button for analysis.")
 
-message = st.text_area("✉️ Enter a suspicious message to analyze")
-url = st.text_input("🔗 Or enter a suspicious website/link")
+st.divider()
 
-if st.button("🔍 Analyze"):
+# ---------- MESSAGE ANALYSIS ----------
+st.markdown("### 📩 Message Analysis")
+message = st.text_area("Enter a suspicious message")
+
+if st.button("🕵️ Analyze Message"):
     if message.strip():
         flagged = [word for word in scam_words if word in message.lower()]
         if flagged:
-            st.error(f"⚠️ This message looks suspicious. Keywords detected: {', '.join(flagged)}")
+            st.error(f"⚠️ Suspicious message detected. Keywords: {', '.join(flagged)}")
         else:
             st.success("✅ Message appears safe.")
-    
-    elif url.strip():
+    else:
+        st.warning("Please enter a message before analyzing.")
+
+st.divider()
+
+# ---------- LINK ANALYSIS ----------
+st.markdown("### 🔗 Link Analysis")
+url = st.text_input("Enter a suspicious website or link")
+
+if st.button("🔍 Analyze Link"):
+    if url.strip():
         is_bad, reason = is_suspicious_url(url)
         if is_bad:
             st.error(f"⚠️ Suspicious link detected: {reason}")
         else:
             st.success("✅ Link looks safe.")
-    
     else:
-        st.warning("⚠️ Please enter a message or link before analyzing.")
+        st.warning("Please enter a link before analyzing.")
