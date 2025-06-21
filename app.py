@@ -4,6 +4,20 @@ from urllib.parse import urlparse
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
+def add_background():
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            background-attachment: fixed;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+add_background()
 # ---------------- TRUSTED & SCAM RULES ----------------
 whitelisted_domains = [
     'waecdirect.org',
