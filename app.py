@@ -8,33 +8,28 @@ st.set_page_config(page_title="CyberSentry AI", layout="centered")
 def add_custom_styles():
     st.markdown("""
         <style>
-        /* Set background gradient */
         .stApp {
             background: linear-gradient(to right, #f2f7fc, #e0ecf1);
             background-attachment: fixed;
             font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Style headers */
         h1, h2, h3 {
             color: #002244;
         }
 
-        /* Style text areas and input boxes */
         textarea, .stTextInput > div > input {
             background-color: #ffffff;
             border: 1px solid #c3d3e5;
             border-radius: 10px;
         }
 
-        /* Buttons */
         button[kind="primary"] {
             background-color: #0056b3;
             color: white;
             border-radius: 8px;
         }
 
-        /* Metrics & boxes */
         .stMetric {
             background-color: #f7fbff;
             border: 1px solid #d0e2f2;
@@ -42,15 +37,14 @@ def add_custom_styles():
             padding: 8px;
         }
 
-        /* Sidebar */
         section[data-testid="stSidebar"] {
             background-color: #f0f6fb;
         }
-
         </style>
     """, unsafe_allow_html=True)
 
 add_custom_styles()
+
 # ---------------- TRUSTED & SCAM RULES ----------------
 whitelisted_domains = [
     'waecdirect.org',
@@ -87,7 +81,6 @@ def is_suspicious_url(url):
         scheme = parsed.scheme
         path = parsed.path.lower()
 
-        # Clean domain
         domain = domain.replace("www.", "")
         if domain in whitelisted_domains:
             return False, "✅ Link looks safe."
@@ -110,13 +103,11 @@ def is_suspicious_url(url):
     except Exception as e:
         return True, "⚠️ Error checking the link"
 
-
 # ---------------- STREAMLIT UI ----------------
 st.title("CyberSentry AI 🛡️")
 st.subheader("Your Smartest Line of Defense Against Scams and Phishing Attacks")
 
 st.markdown("Analyze suspicious **messages** or **website links** to avoid scams and phishing.")
-
 st.divider()
 
 # ---------------- MESSAGE ANALYSIS ----------------
@@ -125,11 +116,14 @@ message = st.text_area("Paste the suspicious message here", key="msg_input")
 
 if st.button("🕵️ Analyze Message", key="analyze_msg"):
     if message.strip():
-        matched = [word for word in scam_words if word in message.lower()]
-        if matched:
-            st.error(f"⚠️ Message is likely **suspicious**.\n\nDetected scam phrases: **{', '.join(matched)}**")
+        msg_lower = message.lower()
+        matched_phrases = [word for word in scam_words if word in msg_lower]
+        matched_keywords = [kw for kw in suspicious_keywords if kw in msg_lower]
+
+        if matched_phrases or matched_keywords:
+            st.error("⚠️ Message is likely **suspicious**. Please be cautious.")
         else:
-            st.success("✅ Message appears safe. No known scam phrases found.")
+            st.success("✅ Message appears safe.")
     else:
         st.warning("⚠️ Please enter a message first.")
 
