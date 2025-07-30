@@ -1,4 +1,5 @@
 import streamlit as st
+from urllib.parse import urlparse
 
 st.set_page_config(page_title="CyberSentry AI", layout="wide")
 
@@ -67,6 +68,7 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         cursor: pointer;
         transition: all 0.3s ease;
+        margin-bottom: 10px;
     }
     .feature-btn:hover {
         background-color: #0056b3;
@@ -104,18 +106,106 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("## Features", unsafe_allow_html=True)
+
+# --- Feature Buttons with state handling ---
 col1, col2, col3, col4 = st.columns(4)
 
+if "feature_selected" not in st.session_state:
+    st.session_state.feature_selected = None
+
 with col1:
-    st.markdown('<div class="feature-btn">Message Scam Detector</div>', unsafe_allow_html=True)
+    if st.button("Message Scam Detector", key="btn_message"):
+        st.session_state.feature_selected = "message"
 with col2:
-    st.markdown('<div class="feature-btn">Phishing Link Checker</div>', unsafe_allow_html=True)
+    if st.button("Phishing Link Checker", key="btn_link"):
+        st.session_state.feature_selected = "link"
 with col3:
-    st.markdown('<div class="feature-btn">AI-Powered Analysis</div>', unsafe_allow_html=True)
+    if st.button("AI-Powered Analysis", key="btn_ai"):
+        st.session_state.feature_selected = "ai"
 with col4:
-    st.markdown('<div class="feature-btn">Cybersecurity Tips</div>', unsafe_allow_html=True)
+    if st.button("Cybersecurity Tips", key="btn_tips"):
+        st.session_state.feature_selected = "tips"
 
 st.divider()
+
+# --- Shared data ---
+whitelisted_domains = [
+    'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 
+    'jamb.gov.ng', 'nipost.gov.ng', 'education.gov.ng', 'nira.org.ng'
+]
+suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info', '.xyz', '.top']
+suspicious_keywords = [
+    'verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria',
+    'nimc', 'bvn', 'cbn', 'selected', 'shortlisted', 'reward', 'lottery',
+    'win', 'bit.ly', 'tinyurl', 'urgent', 'gift', 'claim', 'bonus', 'promo'
+]
+scam_words = [
+    "congratulations", "you have been selected", "you have been shortlisted",
+    "dear customer", "urgent action", "verify your account", "claim your reward",
+    "you've won", "update your bank", "click to receive", "limited time offer"
+]
+
+def is_suspicious_url(url):
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower().strip()
+        scheme = parsed.scheme
+        path = parsed.path.lower()
+        domain = domain.replace("www.", "")
+        if domain in whitelisted_domains:
+            return False
+        if scheme != "https":
+            return True
+        if any(domain.endswith(tld) for tld in suspicious_tlds):
+            return True
+        if domain.count('.') > 3:
+            return True
+        if any(keyword in domain or keyword in path for keyword in suspicious_keywords):
+            return True
+        return False
+    except:
+        return True
+
+# --- Conditional Display ---
+if st.session_state.feature_selected == "message":
+    st.subheader("📩 Message Scam Checker")
+    message = st.text_area("Paste the suspicious message here")
+    if st.button("Analyze Message"):
+        if message.strip():
+            if any(word in message.lower() for word in scam_words + suspicious_keywords):
+                st.error("Message is likely suspicious. Please be cautious.")
+            else:
+                st.success("Message appears safe.")
+        else:
+            st.warning("Please enter a message first.")
+
+elif st.session_state.feature_selected == "link":
+    st.subheader("🔗 Phishing Link Checker")
+    url = st.text_input("Paste the suspicious website or link")
+    if st.button("Analyze Link"):
+        if url.strip():
+            if is_suspicious_url(url):
+                st.error("This link seems suspicious.")
+            else:
+                st.success("This link looks safe.")
+        else:
+            st.warning("Please enter a link first.")
+
+elif st.session_state.feature_selected == "tips":
+    st.subheader("🛡️ Cybersecurity Tips")
+    tips = [
+        "Use strong, unique passwords for all accounts.",
+        "Enable two-factor authentication wherever possible.",
+        "Avoid clicking on unknown or shortened links.",
+        "Keep your software and antivirus updated.",
+        "Never share sensitive information over email or text."
+    ]
+    for tip in tips:
+        st.info(tip)
+
+elif st.session_state.feature_selected == "ai":
+    st.subheader("🤖 AI-Powered Analysis")
+    st.write("This feature will soon provide intelligent scam detection using machine learning models.")
 
 st.markdown("""
 <div class="footer">
