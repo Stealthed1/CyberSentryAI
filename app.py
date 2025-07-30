@@ -1,5 +1,4 @@
 import streamlit as st
-from urllib.parse import urlparse
 
 st.set_page_config(page_title="CyberSentry AI", layout="wide")
 
@@ -56,22 +55,24 @@ st.markdown("""
         background-color: #f1f1f1;
     }
     .feature-btn {
-        background-color: #ffffff;
+        background: white;
         color: #0056b3;
         border: 2px solid #0056b3;
-        border-radius: 10px;
-        padding: 15px;
+        border-radius: 12px;
+        padding: 20px;
         width: 100%;
         font-weight: bold;
         text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        font-size: 1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         cursor: pointer;
         transition: all 0.3s ease;
     }
     .feature-btn:hover {
         background-color: #0056b3;
         color: white;
-        transform: translateY(-3px);
+        transform: translateY(-4px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
     .footer {
         text-align: center;
@@ -105,97 +106,19 @@ st.markdown("""
 st.markdown("## Features", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
-feature = st.session_state.get("feature", "none")
-
 with col1:
-    if st.button("Message Scam Detector", key="msg", help="Detects scam messages", use_container_width=True):
-        st.session_state.feature = "message"
+    st.markdown('<div class="feature-btn">Message Scam Detector</div>', unsafe_allow_html=True)
 with col2:
-    if st.button("Phishing Link Checker", key="link", help="Checks for phishing links", use_container_width=True):
-        st.session_state.feature = "link"
+    st.markdown('<div class="feature-btn">Phishing Link Checker</div>', unsafe_allow_html=True)
 with col3:
-    if st.button("AI-Powered Analysis", key="ai", help="Advanced AI-based detection", use_container_width=True):
-        st.session_state.feature = "ai"
+    st.markdown('<div class="feature-btn">AI-Powered Analysis</div>', unsafe_allow_html=True)
 with col4:
-    if st.button("Cybersecurity Tips", key="tips", help="Best security practices", use_container_width=True):
-        st.session_state.feature = "tips"
+    st.markdown('<div class="feature-btn">Cybersecurity Tips</div>', unsafe_allow_html=True)
 
 st.divider()
-st.markdown("## Scam & Phishing Scanner", unsafe_allow_html=True)
-
-whitelisted_domains = [
-    'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 
-    'jamb.gov.ng', 'nipost.gov.ng', 'education.gov.ng', 'nira.org.ng'
-]
-suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.gq', '.biz', '.info', '.xyz', '.top']
-suspicious_keywords = [
-    'verify', 'account', 'login', 'secure', 'bank', 'update', 'nigeria',
-    'nimc', 'bvn', 'cbn', 'selected', 'shortlisted', 'reward', 'lottery',
-    'win', 'bit.ly', 'tinyurl', 'urgent', 'gift', 'claim', 'bonus', 'promo'
-]
-scam_words = [
-    "congratulations", "you have been selected", "you have been shortlisted",
-    "dear customer", "urgent action", "verify your account", "claim your reward",
-    "you've won", "update your bank", "click to receive", "limited time offer"
-]
-
-def is_suspicious_url(url):
-    try:
-        parsed = urlparse(url)
-        domain = parsed.netloc.lower().strip()
-        scheme = parsed.scheme
-        path = parsed.path.lower()
-        domain = domain.replace("www.", "")
-        if domain in whitelisted_domains:
-            return False
-        if scheme != "https": return True
-        if any(domain.endswith(tld) for tld in suspicious_tlds): return True
-        if domain.count('.') > 3: return True
-        if any(keyword in domain or keyword in path for keyword in suspicious_keywords): return True
-        return False
-    except:
-        return True
-
-if st.session_state.get("feature") == "message":
-    st.subheader("Message Scam Checker")
-    message = st.text_area("Paste the suspicious message here")
-    if st.button("Analyze Message"):
-        if message.strip():
-            if any(word in message.lower() for word in scam_words + suspicious_keywords):
-                st.error("Message is likely suspicious. Please be cautious.")
-            else:
-                st.success("Message appears safe.")
-        else:
-            st.warning("Please enter a message first.")
-
-elif st.session_state.get("feature") == "link":
-    st.subheader("Link Phishing Checker")
-    url = st.text_input("Paste the suspicious website or link")
-    if st.button("Analyze Link"):
-        if url.strip():
-            if is_suspicious_url(url):
-                st.error("This link seems suspicious.")
-            else:
-                st.success("This link looks safe.")
-        else:
-            st.warning("Please enter a link first.")
-
-elif st.session_state.get("feature") == "tips":
-    st.subheader("Cybersecurity Tips")
-    st.markdown("""
-    - Always check URLs before clicking.  
-    - Avoid sharing personal information online.  
-    - Enable 2FA for added security.  
-    - Keep your devices updated with the latest patches.  
-    - Use strong, unique passwords for each account.  
-    """)
-
-elif st.session_state.get("feature") == "ai":
-    st.subheader("AI-Powered Analysis")
-    st.info("Coming soon: Advanced AI-driven scam detection for smarter protection!")
 
 st.markdown("""
 <div class="footer">
-    © 2025 CyberSentry AI | Built to protect users online.
+    © 2025 CyberSentry AI | Built with ❤️ to protect users online.
 </div>
 """, unsafe_allow_html=True)
