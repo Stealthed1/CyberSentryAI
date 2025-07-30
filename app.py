@@ -187,12 +187,15 @@ with col1:
 with col2:
     st.markdown("### 🔗 Link Phishing Checker")
     url = st.text_input("Paste the suspicious website or link")
-    if st.button("Analyze Link"):
-        if url.strip():
-            risk, reason = is_suspicious_url(url)
-            st.error(reason) if risk else st.success(reason)
+    if st.button("🔍 Analyze Link", key="analyze_url"):
+    if url.strip():
+        risk, reason = is_suspicious_url(url)
+        if risk:
+            st.error(reason)
         else:
-            st.warning("⚠️ Please enter a link first.")
+            st.success(reason)
+    else:
+        st.warning("⚠️ Please enter a link first.")
 
 # ---------------- FOOTER ----------------
 st.markdown("""
