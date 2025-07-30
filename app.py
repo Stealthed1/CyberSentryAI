@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 
 st.set_page_config(page_title="CyberSentry AI", layout="wide")
 
+# --- Custom CSS ---
 st.markdown("""
     <style>
     .stApp {
@@ -36,8 +37,13 @@ st.markdown("""
         color: white;
         margin-bottom: 30px;
     }
-    .hero h1 { font-size: 3rem; font-weight: bold; }
-    .hero p { font-size: 1.2rem; }
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+    .hero p {
+        font-size: 1.2rem;
+    }
     .hero button {
         background-color: white;
         color: #0056b3;
@@ -47,7 +53,9 @@ st.markdown("""
         font-weight: bold;
         cursor: pointer;
     }
-    .hero button:hover { background-color: #f1f1f1; }
+    .hero button:hover {
+        background-color: #f1f1f1;
+    }
     .feature-card {
         background-color: white;
         padding: 20px;
@@ -57,7 +65,9 @@ st.markdown("""
         transition: transform 0.3s;
         cursor: pointer;
     }
-    .feature-card:hover { transform: translateY(-5px); }
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
     .feature-title {
         font-weight: bold;
         color: #0056b3;
@@ -73,6 +83,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- Navbar ---
 st.markdown("""
 <div class="navbar">
     <div><strong>🛡️ CyberSentry AI</strong></div>
@@ -84,38 +95,38 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# --- Hero Section ---
 st.markdown("""
 <div class="hero">
     <h1>CyberSentry AI</h1>
     <p>Your Smartest Line of Defense Against Scams and Phishing Attacks</p>
-    <button onclick="window.location.href='#features'">🚀 Start Scanning</button>
+    <button onclick="window.location.href='#scanner'">Start Scanning</button>
 </div>
 """, unsafe_allow_html=True)
 
+# --- Feature Buttons ---
 st.markdown("## Features", unsafe_allow_html=True)
-
-# Session state to track which feature is active
-if "active_feature" not in st.session_state:
-    st.session_state.active_feature = None
-
 col1, col2, col3, col4 = st.columns(4)
+
+feature = st.session_state.get("feature", "none")
 
 with col1:
     if st.button("Message Scam Detector"):
-        st.session_state.active_feature = "message"
+        st.session_state.feature = "message"
 with col2:
     if st.button("Phishing Link Checker"):
-        st.session_state.active_feature = "link"
+        st.session_state.feature = "link"
 with col3:
     if st.button("AI-Powered Analysis"):
-        st.session_state.active_feature = "ai"
+        st.session_state.feature = "ai"
 with col4:
     if st.button("Cybersecurity Tips"):
-        st.session_state.active_feature = "tips"
+        st.session_state.feature = "tips"
 
 st.divider()
+st.markdown("## Scam & Phishing Scanner", unsafe_allow_html=True)
 
-# Data
+# --- Data ---
 whitelisted_domains = [
     'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 
     'jamb.gov.ng', 'nipost.gov.ng', 'education.gov.ng', 'nira.org.ng'
@@ -138,25 +149,20 @@ def is_suspicious_url(url):
         domain = parsed.netloc.lower().strip()
         scheme = parsed.scheme
         path = parsed.path.lower()
-
         domain = domain.replace("www.", "")
         if domain in whitelisted_domains:
             return False
-        if scheme != "https":
-            return True
-        if any(domain.endswith(tld) for tld in suspicious_tlds):
-            return True
-        if domain.count('.') > 3:
-            return True
-        if any(keyword in domain or keyword in path for keyword in suspicious_keywords):
-            return True
+        if scheme != "https": return True
+        if any(domain.endswith(tld) for tld in suspicious_tlds): return True
+        if domain.count('.') > 3: return True
+        if any(keyword in domain or keyword in path for keyword in suspicious_keywords): return True
         return False
     except:
         return True
 
-# Feature-specific displays
-if st.session_state.active_feature == "message":
-    st.markdown("### Message Scam Checker")
+# --- Display sections based on feature clicked ---
+if st.session_state.get("feature") == "message":
+    st.subheader("Message Scam Checker")
     message = st.text_area("Paste the suspicious message here")
     if st.button("Analyze Message"):
         if message.strip():
@@ -167,37 +173,35 @@ if st.session_state.active_feature == "message":
         else:
             st.warning("Please enter a message first.")
 
-elif st.session_state.active_feature == "link":
-    st.markdown("### Link Phishing Checker")
+elif st.session_state.get("feature") == "link":
+    st.subheader("Link Phishing Checker")
     url = st.text_input("Paste the suspicious website or link")
     if st.button("Analyze Link"):
         if url.strip():
             if is_suspicious_url(url):
-                st.error("This link may be dangerous.")
+                st.error("This link seems suspicious.")
             else:
-                st.success("Link looks safe.")
+                st.success("This link looks safe.")
         else:
             st.warning("Please enter a link first.")
 
-elif st.session_state.active_feature == "tips":
-    st.markdown("### Cybersecurity Tips")
-    tips = [
-        "Use strong, unique passwords for each account.",
-        "Avoid clicking on unknown links in emails or messages.",
-        "Enable two-factor authentication (2FA) whenever possible.",
-        "Regularly update your operating system and apps.",
-        "Do not share personal information with unverified sources.",
-        "Be cautious of deals that sound too good to be true."
-    ]
-    for tip in tips:
-        st.markdown(f"- {tip}")
+elif st.session_state.get("feature") == "tips":
+    st.subheader("Cybersecurity Tips")
+    st.info("""
+    ✅ Always check URLs before clicking.
+    ✅ Avoid sharing personal information online.
+    ✅ Enable 2FA for added security.
+    ✅ Keep your devices updated with the latest patches.
+    ✅ Use strong, unique passwords for each account.
+    """)
 
-elif st.session_state.active_feature == "ai":
-    st.markdown("### AI-Powered Analysis")
-    st.info("Coming Soon: Advanced AI threat detection and reporting.")
+elif st.session_state.get("feature") == "ai":
+    st.subheader("AI-Powered Analysis")
+    st.info("Coming soon: Advanced AI-driven scam detection for smarter protection!")
 
+# --- Footer ---
 st.markdown("""
 <div class="footer">
-    © 2025 CyberSentry AI | Built by Ibrahim Shafiu Muhammad 
+    © 2025 CyberSentry AI | Built with ❤️ to protect users online.
 </div>
 """, unsafe_allow_html=True)
