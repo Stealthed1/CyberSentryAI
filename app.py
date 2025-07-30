@@ -196,6 +196,14 @@ elif st.session_state.active_feature == "ai":
     st.markdown("### AI-Powered Analysis")
     st.info("Coming Soon: Advanced AI threat detection and reporting.")
 
+with st.container():
+    st.markdown("<div id='contact'></div>", unsafe_allow_html=True)
+    st.header("📞 Contact")
+    st.write("**Name:** Ibrahim Shafiu Muhammad")
+    st.write("**Phone:** 08109397105")
+    st.write("**Email:** [ibrahimshafiu12@gmail.com](mailto:ibrahimshafiu12@gmail.com)")
+    st.write("**LinkedIn:** [linkedin.com/in/ibrahim-shafi-u-muhammad-550429209](https://www.linkedin.com/in/ibrahim-shafi-u-muhammad-550429209)")
+
 st.markdown("""
 <div class="footer">
     © 2025 CyberSentry AI | Built with ❤️ to protect users online.
