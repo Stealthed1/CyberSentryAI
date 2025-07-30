@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 st.set_page_config(page_title="CyberSentry AI", layout="wide")
 
-# --- Custom CSS ---
 st.markdown("""
     <style>
     .stApp {
@@ -56,22 +55,23 @@ st.markdown("""
     .hero button:hover {
         background-color: #f1f1f1;
     }
-    .feature-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        text-align: center;
-        transition: transform 0.3s;
-        cursor: pointer;
-    }
-    .feature-card:hover {
-        transform: translateY(-5px);
-    }
-    .feature-title {
-        font-weight: bold;
+    .feature-btn {
+        background-color: #ffffff;
         color: #0056b3;
-        margin-top: 10px;
+        border: 2px solid #0056b3;
+        border-radius: 10px;
+        padding: 15px;
+        width: 100%;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .feature-btn:hover {
+        background-color: #0056b3;
+        color: white;
+        transform: translateY(-3px);
     }
     .footer {
         text-align: center;
@@ -83,10 +83,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Navbar ---
 st.markdown("""
 <div class="navbar">
-    <div><strong>🛡️ CyberSentry AI</strong></div>
+    <div><strong>CyberSentry AI</strong></div>
     <div>
         <a href="#features">Features</a>
         <a href="#scanner">Scanner</a>
@@ -95,7 +94,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- Hero Section ---
 st.markdown("""
 <div class="hero">
     <h1>CyberSentry AI</h1>
@@ -104,29 +102,27 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- Feature Buttons ---
 st.markdown("## Features", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
 feature = st.session_state.get("feature", "none")
 
 with col1:
-    if st.button("Message Scam Detector"):
+    if st.button("Message Scam Detector", key="msg", help="Detects scam messages", use_container_width=True):
         st.session_state.feature = "message"
 with col2:
-    if st.button("Phishing Link Checker"):
+    if st.button("Phishing Link Checker", key="link", help="Checks for phishing links", use_container_width=True):
         st.session_state.feature = "link"
 with col3:
-    if st.button("AI-Powered Analysis"):
+    if st.button("AI-Powered Analysis", key="ai", help="Advanced AI-based detection", use_container_width=True):
         st.session_state.feature = "ai"
 with col4:
-    if st.button("Cybersecurity Tips"):
+    if st.button("Cybersecurity Tips", key="tips", help="Best security practices", use_container_width=True):
         st.session_state.feature = "tips"
 
 st.divider()
 st.markdown("## Scam & Phishing Scanner", unsafe_allow_html=True)
 
-# --- Data ---
 whitelisted_domains = [
     'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 
     'jamb.gov.ng', 'nipost.gov.ng', 'education.gov.ng', 'nira.org.ng'
@@ -160,7 +156,6 @@ def is_suspicious_url(url):
     except:
         return True
 
-# --- Display sections based on feature clicked ---
 if st.session_state.get("feature") == "message":
     st.subheader("Message Scam Checker")
     message = st.text_area("Paste the suspicious message here")
@@ -187,21 +182,20 @@ elif st.session_state.get("feature") == "link":
 
 elif st.session_state.get("feature") == "tips":
     st.subheader("Cybersecurity Tips")
-    st.info("""
-    ✅ Always check URLs before clicking.
-    ✅ Avoid sharing personal information online.
-    ✅ Enable 2FA for added security.
-    ✅ Keep your devices updated with the latest patches.
-    ✅ Use strong, unique passwords for each account.
+    st.markdown("""
+    - Always check URLs before clicking.  
+    - Avoid sharing personal information online.  
+    - Enable 2FA for added security.  
+    - Keep your devices updated with the latest patches.  
+    - Use strong, unique passwords for each account.  
     """)
 
 elif st.session_state.get("feature") == "ai":
     st.subheader("AI-Powered Analysis")
     st.info("Coming soon: Advanced AI-driven scam detection for smarter protection!")
 
-# --- Footer ---
 st.markdown("""
 <div class="footer">
-    © 2025 CyberSentry AI | Built with ❤️ to protect users online.
+    © 2025 CyberSentry AI | Built to protect users online.
 </div>
 """, unsafe_allow_html=True)
