@@ -63,11 +63,11 @@ st.markdown("""
         text-align: center;
         transition: transform 0.3s;
         cursor: pointer;
+        border: 2px solid transparent;
     }
     .feature-card:hover {
         transform: translateY(-5px);
-        background-color: #f9fbff;
-        border: 1px solid #0056b3;
+        border-color: #0056b3;
     }
     .feature-title {
         font-weight: bold;
@@ -111,20 +111,21 @@ if "feature_selected" not in st.session_state:
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    if st.button("Message Scam Detector", key="msg_card"):
+    if st.markdown('<div class="feature-card" onclick="window.location.href=\'#scanner\'">Message Scam Detector</div>', unsafe_allow_html=True):
         st.session_state.feature_selected = "message"
 with col2:
-    if st.button("Phishing Link Checker", key="link_card"):
+    if st.markdown('<div class="feature-card">Phishing Link Checker</div>', unsafe_allow_html=True):
         st.session_state.feature_selected = "link"
 with col3:
-    if st.button("AI-Powered Analysis", key="ai_card"):
+    if st.markdown('<div class="feature-card">AI-Powered Analysis</div>', unsafe_allow_html=True):
         st.session_state.feature_selected = "ai"
 with col4:
-    if st.button("Cybersecurity Tips", key="tips_card"):
+    if st.markdown('<div class="feature-card">Cybersecurity Tips</div>', unsafe_allow_html=True):
         st.session_state.feature_selected = "tips"
 
 st.divider()
 
+# --- Data ---
 whitelisted_domains = [
     'waecdirect.org', 'nysc.gov.ng', 'cbn.gov.ng', 'nimc.gov.ng', 
     'jamb.gov.ng', 'nipost.gov.ng', 'education.gov.ng', 'nira.org.ng'
@@ -162,7 +163,7 @@ def is_suspicious_url(url):
     except:
         return True
 
-# --- Dynamic display ---
+# --- Feature Display ---
 if st.session_state.feature_selected == "message":
     st.subheader("Message Scam Checker")
     message = st.text_area("Paste the suspicious message here")
