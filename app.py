@@ -198,6 +198,6 @@ elif st.session_state.active_feature == "ai":
 
 st.markdown("""
 <div class="footer">
-    © 2025 CyberSentry AI | Built with ❤️ to protect users online.
+    © 2025 CyberSentry AI | Built by Ibrahim Shafiu Muhammad 
 </div>
 """, unsafe_allow_html=True)
