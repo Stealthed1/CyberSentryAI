@@ -197,6 +197,7 @@ with col2:
     else:
         st.warning("⚠️ Please enter a link first.")
 
+
 # ---------------- FOOTER ----------------
 st.markdown("""
 <div class="footer">
