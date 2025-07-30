@@ -1,10 +1,8 @@
 import streamlit as st
 from urllib.parse import urlparse
 
-# ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="CyberSentry AI", layout="centered")
 
-# ✨ Add background and styling
 def add_custom_styles():
     st.markdown("""
         <style>
@@ -45,7 +43,6 @@ def add_custom_styles():
 
 add_custom_styles()
 
-# ---------------- TRUSTED & SCAM RULES ----------------
 whitelisted_domains = [
     'waecdirect.org',
     'nysc.gov.ng',
@@ -73,7 +70,6 @@ scam_words = [
     "you've won", "update your bank", "click to receive", "limited time offer"
 ]
 
-# ---------------- URL ANALYSIS FUNCTION ----------------
 def is_suspicious_url(url):
     try:
         parsed = urlparse(url)
@@ -103,14 +99,11 @@ def is_suspicious_url(url):
     except Exception as e:
         return True, "⚠️ Error checking the link"
 
-# ---------------- STREAMLIT UI ----------------
 st.title("CyberSentry AI 🛡️")
 st.subheader("Your Smartest Line of Defense Against Scams and Phishing Attacks")
-
 st.markdown("Analyze suspicious **messages** or **website links** to avoid scams and phishing.")
 st.divider()
 
-# ---------------- MESSAGE ANALYSIS ----------------
 st.markdown("### 📩 Message Scam Checker")
 message = st.text_area("Paste the suspicious message here", key="msg_input")
 
@@ -129,7 +122,6 @@ if st.button("🕵️ Analyze Message", key="analyze_msg"):
 
 st.divider()
 
-# ---------------- LINK ANALYSIS ----------------
 st.markdown("### 🔗 Link Phishing Checker")
 url = st.text_input("Paste the suspicious website or link", key="url_input")
 
